@@ -1,0 +1,240 @@
+-- MySQL Administrator dump 1.4
+--
+-- ------------------------------------------------------
+-- Server version	5.7.13-log
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+
+--
+-- Create schema projeto2
+--
+
+CREATE DATABASE IF NOT EXISTS projeto2;
+USE projeto2;
+
+--
+-- Definition of table `bairro`
+--
+
+DROP TABLE IF EXISTS `bairro`;
+CREATE TABLE `bairro` (
+  `baiid` int(11) NOT NULL AUTO_INCREMENT,
+  `bainome` varchar(30) NOT NULL,
+  `baizoncodigo` int(11) NOT NULL,
+  PRIMARY KEY (`baiid`),
+  KEY `baizoncodigo` (`baizoncodigo`),
+  CONSTRAINT `bairro_ibfk_1` FOREIGN KEY (`baizoncodigo`) REFERENCES `zona` (`zoncodigo`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `bairro`
+--
+
+/*!40000 ALTER TABLE `bairro` DISABLE KEYS */;
+INSERT INTO `bairro` (`baiid`,`bainome`,`baizoncodigo`) VALUES 
+ (1,'Japiim 1',1),
+ (3,'Tancredo Neves',3),
+ (4,'CIDADE NOVA',1);
+/*!40000 ALTER TABLE `bairro` ENABLE KEYS */;
+
+
+--
+-- Definition of table `cliente`
+--
+
+DROP TABLE IF EXISTS `cliente`;
+CREATE TABLE `cliente` (
+  `clicpf` char(15) NOT NULL,
+  `clinome` varchar(30) NOT NULL,
+  `clirua` varchar(30) NOT NULL,
+  `clinumero` varchar(10) NOT NULL,
+  `clicep` char(11) NOT NULL,
+  `clibaiid` int(11) NOT NULL,
+  PRIMARY KEY (`clicpf`),
+  KEY `clibaiid` (`clibaiid`),
+  CONSTRAINT `cliente_ibfk_1` FOREIGN KEY (`clibaiid`) REFERENCES `bairro` (`baiid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `cliente`
+--
+
+/*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
+INSERT INTO `cliente` (`clicpf`,`clinome`,`clirua`,`clinumero`,`clicep`,`clibaiid`) VALUES 
+ ('111.111.111-11','RONEI','201','21','69000--000',1);
+/*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
+
+
+--
+-- Definition of table `item_pedido`
+--
+
+DROP TABLE IF EXISTS `item_pedido`;
+CREATE TABLE `item_pedido` (
+  `itemcodigo` int(11) NOT NULL AUTO_INCREMENT,
+  `itemprecoproduto` double(5,2) NOT NULL,
+  `itemqtde` int(11) NOT NULL,
+  `itempedcodigo` int(11) NOT NULL,
+  `itemprodid` int(11) NOT NULL,
+  PRIMARY KEY (`itemcodigo`),
+  KEY `itempedcodigo` (`itempedcodigo`),
+  KEY `itemprodid` (`itemprodid`),
+  CONSTRAINT `item_pedido_ibfk_1` FOREIGN KEY (`itempedcodigo`) REFERENCES `pedido` (`pedcodigo`),
+  CONSTRAINT `item_pedido_ibfk_2` FOREIGN KEY (`itemprodid`) REFERENCES `produto` (`prodid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `item_pedido`
+--
+
+/*!40000 ALTER TABLE `item_pedido` DISABLE KEYS */;
+/*!40000 ALTER TABLE `item_pedido` ENABLE KEYS */;
+
+
+--
+-- Definition of table `pedido`
+--
+
+DROP TABLE IF EXISTS `pedido`;
+CREATE TABLE `pedido` (
+  `pedcodigo` int(11) NOT NULL AUTO_INCREMENT,
+  `pedstatus` varchar(30) NOT NULL,
+  `peddtdpedido` date NOT NULL,
+  `peddtentrega` date NOT NULL,
+  `pedvalor` double(5,2) NOT NULL,
+  `pedusuid` int(11) NOT NULL,
+  `pedclicpf` char(15) NOT NULL,
+  PRIMARY KEY (`pedcodigo`),
+  KEY `pedusuid` (`pedusuid`),
+  KEY `pedclicpf` (`pedclicpf`),
+  CONSTRAINT `pedido_ibfk_1` FOREIGN KEY (`pedusuid`) REFERENCES `usuario` (`usuid`),
+  CONSTRAINT `pedido_ibfk_2` FOREIGN KEY (`pedclicpf`) REFERENCES `cliente` (`clicpf`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `pedido`
+--
+
+/*!40000 ALTER TABLE `pedido` DISABLE KEYS */;
+INSERT INTO `pedido` (`pedcodigo`,`pedstatus`,`peddtdpedido`,`peddtentrega`,`pedvalor`,`pedusuid`,`pedclicpf`) VALUES 
+ (3,'A','2018-06-15','2018-06-16',10.00,8,'111.111.111-11');
+/*!40000 ALTER TABLE `pedido` ENABLE KEYS */;
+
+
+--
+-- Definition of table `produto`
+--
+
+DROP TABLE IF EXISTS `produto`;
+CREATE TABLE `produto` (
+  `prodid` int(11) NOT NULL AUTO_INCREMENT,
+  `prodnome` varchar(30) NOT NULL,
+  `prodpreco` double(5,2) NOT NULL,
+  `prodestoque` int(11) NOT NULL,
+  PRIMARY KEY (`prodid`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `produto`
+--
+
+/*!40000 ALTER TABLE `produto` DISABLE KEYS */;
+INSERT INTO `produto` (`prodid`,`prodnome`,`prodpreco`,`prodestoque`) VALUES 
+ (2,'carne assada de panela',20.00,14),
+ (3,'frango guisado',10.00,11);
+/*!40000 ALTER TABLE `produto` ENABLE KEYS */;
+
+
+--
+-- Definition of table `tipo_usuario`
+--
+
+DROP TABLE IF EXISTS `tipo_usuario`;
+CREATE TABLE `tipo_usuario` (
+  `tipid` int(11) NOT NULL AUTO_INCREMENT,
+  `tipdescricao` varchar(30) NOT NULL,
+  PRIMARY KEY (`tipid`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `tipo_usuario`
+--
+
+/*!40000 ALTER TABLE `tipo_usuario` DISABLE KEYS */;
+INSERT INTO `tipo_usuario` (`tipid`,`tipdescricao`) VALUES 
+ (1,'Administrador'),
+ (2,'Cliente'),
+ (3,'Visitante');
+/*!40000 ALTER TABLE `tipo_usuario` ENABLE KEYS */;
+
+
+--
+-- Definition of table `usuario`
+--
+
+DROP TABLE IF EXISTS `usuario`;
+CREATE TABLE `usuario` (
+  `usuid` int(11) NOT NULL AUTO_INCREMENT,
+  `usunome` varchar(30) NOT NULL,
+  `usulogin` varchar(30) NOT NULL,
+  `ususenha` varchar(30) NOT NULL,
+  `usutipid` int(11) NOT NULL,
+  PRIMARY KEY (`usuid`),
+  KEY `usutipid` (`usutipid`),
+  CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`usutipid`) REFERENCES `tipo_usuario` (`tipid`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `usuario`
+--
+
+/*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
+INSERT INTO `usuario` (`usuid`,`usunome`,`usulogin`,`ususenha`,`usutipid`) VALUES 
+ (5,'Kleison','Kleison','kleison18',1),
+ (8,'RONEI','123','123',1);
+/*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
+
+
+--
+-- Definition of table `zona`
+--
+
+DROP TABLE IF EXISTS `zona`;
+CREATE TABLE `zona` (
+  `zoncodigo` int(11) NOT NULL AUTO_INCREMENT,
+  `zonnome` varchar(10) NOT NULL,
+  PRIMARY KEY (`zoncodigo`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `zona`
+--
+
+/*!40000 ALTER TABLE `zona` DISABLE KEYS */;
+INSERT INTO `zona` (`zoncodigo`,`zonnome`) VALUES 
+ (1,'SUL'),
+ (2,'NORTE'),
+ (3,'LESTE'),
+ (4,'OESTE'),
+ (5,'NORTE');
+/*!40000 ALTER TABLE `zona` ENABLE KEYS */;
+
+
+
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
